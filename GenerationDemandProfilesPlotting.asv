@@ -1,8 +1,6 @@
 
-function GenerationDemandProfilesPlotting(H2HeatingDemand, PpvGeneration, WindGeneration, T, namefile)
+function GenerationDemandProfilesPlotting(H2HeatingDemand, PpvGeneration, WindGeneration, T)
 hours = 1:T;
-size(hours)
-size(H2HeatingDemand')
 % Create a bar chart with 3 sets of data
 figure; % Create a new figure window
 bar(hours, [H2HeatingDemand'; PpvGeneration'; WindGeneration'], 'grouped'); % Grouped bar chart
@@ -21,18 +19,13 @@ xticklabels(arrayfun(@(x) sprintf('%02d:00', x), hours, 'UniformOutput', false))
 
 % Optionally, add gridlines for better readability
 % grid on;
-figure;
+
 % line plot of generation and deamand profiles 
 yyaxis left;
-plot(hours, PpvGeneration', 'b-', hours, WindGeneration', 'g-', 'LineWidth',1.2)
+plot(hours, PpvGeneration, hours, 'b-', WindGeneration, 'g-', 'LineWidth',1.2)
 ylabel('Available Solar PV and Wind power [kW]')
-yyaxis right;
-plot(hours, H2HeatingDemand', 'r--','LineWidth',1.2);
-ylabel('Hydrogen-Heating Demand [kg]')
-xlabel('Time [h]');
-legend('PV','WT','HHD')
-set(gca,'FontName', 'Times New Roman', 'FontSize', 12);
-saveas(gcf, namefile);%,"ContentType","vector");
+yyaxis
+
 
 
 % % Example data

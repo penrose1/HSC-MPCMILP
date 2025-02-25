@@ -63,8 +63,7 @@ H2_heating = H2_heating.H2HeDemand(index);
 HeatingD = H2_heating; % kg to kWh
 % Other demands will be added here later on 
 
-GenerationDemandProfilesPlotting(HeatingD(1:Nh), Ppv_actual(1:Nh), Pwind_actual(1:Nh), Nh)
-
+GenerationDemandProfilesPlotting(HeatingD(1:Nh), Ppv_actual(1:Nh), Pwind_actual(1:Nh), Nh, folder+"/Profiles-start.svg")
 init_soc.Battery = SOC_init;
 init_soc.Hs = Hs.SOC_init;
 %% Simulation 
