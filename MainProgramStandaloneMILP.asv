@@ -79,7 +79,8 @@ switch sim.simType
     
     case 'mpcmilp'
         tic;
-        x = MPCMILPSimulation(Nh, Np, T, Ppv_actual, Pwind_actual, HeatingD, Cg_Im, Cg_Ex, Grid, Batt, dt, Capacities, Hs, CO2, f.MPCMILP, nvars);   
+        x = MPCMILPSimulation(Nh, Np, T, Ppv_actual, Pwind_actual, HeatingD, Cg_Im, Cg_Ex, Grid, Batt, dt, Capacities, Hs, CO2, f.MPCMILP, nvars);    
+        
         elapsedTime = toc;
         % Display elapsed time in milliseconds
         elapsedTime_ms = elapsedTime * 1000;  % Convert seconds to milliseconds
@@ -288,9 +289,9 @@ switch sim.simType
         WTUsage = zeros(2,NNp);
         k = 1;
         predHorizon = [3 6 12 24];
-        for prediction = predHorizon
-            [x, mpcmilp,~] = MPCMILPSimulationShrinkingHorizon(Nh, prediction, T, Ppv_actual(1:Nh), Pwind_actual(1:Nh), HeatingD(1:Nh), Cg_Im(1:Nh), Cg_Ex(1:Nh), Grid, Batt, dt, Capacities, Hs, CO2, f.MILP, nvars, Ndays);
-            PlotingMILP_v5_saving(x, Nh, T, Ndays, HeatingD(1:Nh), Ppv_actual(1:Nh), Pwind_actual(1:Nh), Cg_Ex(1:Nh), Cg_Im(1:Nh), CO2, init_soc,folder, prediction,"-shrinking");
+        for predction = predHorizon
+            [x, mpcmilp,~] = MPCMILPSimulationShrinkingHorizon(Nh, Np, T, Ppv_actual(1:Nh), Pwind_actual(1:Nh), HeatingD(1:Nh), Cg_Im(1:Nh), Cg_Ex(1:Nh), Grid, Batt, dt, Capacities, Hs, CO2, f.MILP, nvars, Ndays);
+            PlotingMILP_v5_saving(x, Nh, T, Ndays, HeatingD(1:Nh), Ppv_actual(1:Nh), Pwind_actual(1:Nh), Cg_Ex(1:Nh), Cg_Im(1:Nh), CO2, init_soc,folder, Nh);
             PV_co2(1) = mpcmilp.co2.PVE;
             WT_co2(1) = mpcmilp.co2.WTE;
             GR_co2(1) = mpcmilp.co2.GRE;
@@ -304,9 +305,8 @@ switch sim.simType
             PVUsage(1:k) =  mpcmilp.PVUsage;
             WTUsage(1:k) =  mpcmilp.WTUsage;
     
-            [x, mpcmilp, ~] = MPCMILPSimulation(Nh, prediction, T, Ppv_actual, Pwind_actual, HeatingD, Cg_Im, Cg_Ex, Grid, Batt, dt, Capacities, Hs, CO2, f.MPCMILP, nvars);
-
-            PlotingMILP_v5_saving(x, Nh, T, Ndays, HeatingD(1:Nh), Ppv_actual(1:Nh), Pwind_actual(1:Nh), Cg_Ex(1:Nh), Cg_Im(1:Nh), CO2, init_soc,folder, prediction,"-fixed");
+            [x, mpcmilp, ~] = MPCMILPSimulation(Nh, Np, T, Ppv_actual, Pwind_actual, HeatingD, Cg_Im, Cg_Ex, Grid, Batt, dt, Capacities, Hs, CO2, f.MPCMILP, nvars);
+            PlotingMILP_v5_saving(x, Nh, T, Ndays, HeatingD(1:Nh), Ppv_actual(1:Nh), Pwind_actual(1:Nh), Cg_Ex(1:Nh), Cg_Im(1:Nh), CO2, init_soc,folder, PredictionL);
             PV_co2(2:k) = mpcmilp.co2.PVE;
             WT_co2(2:k) = mpcmilp.co2.WTE;
             GR_co2(2:k) = mpcmilp.co2.GRE;
@@ -318,7 +318,7 @@ switch sim.simType
             SOC_HDS(2:k) = mpcmilp.SOC_HDS;
     
             PVUsage(2:k) =  mpcmilp.PVUsage;
-            WTUsage(2:k) =  mpcmilp.WTUsage;
+            WTUsage(2) =  mpcmilp.WTUsage;
             k = k+1;
         end
         

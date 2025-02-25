@@ -60,7 +60,7 @@ legend('$P_{B}$', '$P_{Ele} - P_{RE}$','$\Sigma P$', ...
     '$P_{G}$', '$Battery \:SOC$','NumColumns',2, 'Location', 'best', 'Interpreter','latex','FontName', 'Times New Roman', 'FontSize', 12);
 % grid on
 set(gca,'FontName', 'Times New Roman', 'FontSize', 12);
-saveas(gcf, folder+"/control_setpoints-"+num2str(index)+which+".svg")
+saveas(gcf, folder+"/control_setpoints-"+num2str(index)+".svg")
 %% H2 storage SOC, and internal setpoints
 % figure;
 % yyaxis left;
@@ -99,4 +99,4 @@ plot(span_soc, SOC_Hs, 'LineWidth',1.2)
 ylabel('SOC_{Hs} [%]','FontName', 'Times New Roman', 'FontSize', 12);
 legend('$P_{Ele}$', '$P_{RE}$', '$SOC_{Hs}$','NumColumns',2,  'Interpreter','latex','FontName', 'Times New Roman', 'FontSize', 12, 'Location','best');
 set(gca,'FontName', 'Times New Roman', 'FontSize', 12);
-saveas(gcf, folder+"/electrolyzer_setpoints-"+num2str(index)+which+".svg");
+saveas(gcf, folder+"/electrolyzer_setpoints-"+num2str(index)+".svg");

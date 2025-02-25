@@ -7,11 +7,11 @@ switch sim
 
     case 'nH_sim'
         simulation.simType = "mpcmilp_and_shrinkingH";
+        Np = 24;
         dt = 1;
         Ndays = 1;
         T = 24; % # of hours in a day 
         Nh = T*Ndays; % Total hours in Ndays
-        Np = 12;
         Hstart = T*0; % Start hour of simulation
         index = Hstart+1:Hstart+Nh+Np-1;
         Capacities.Apv = 1;       % Number of PV hectares 
@@ -45,7 +45,7 @@ switch sim
             % save('Data/Cg_Ex.mat','Cg_Ex')
             % save('Data/Cg_Im.mat','Cg_Im')
         else
-            simulation.folder = "mpcmilp_and_shrinkingH1";
+            simulation.folder = "mpcmilp_and_shrinkingH";
             Cg_Im = load('Data/Cg_Im.mat');
             Grid.Cg_Im = 1*Cg_Im.Cg_Im;
             Cg_ImF = Cg_Im.Cg_Im;
