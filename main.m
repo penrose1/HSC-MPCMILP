@@ -9,10 +9,10 @@ switch sim
         simulation.simType = "mpcmilp_and_shrinkingH";
         Np = 24;
         dt = 1;
-        Ndays = 1;
+        Ndays = 7;
         T = 24; % # of hours in a day 
         Nh = T*Ndays; % Total hours in Ndays
-        Hstart = T*0; % Start hour of simulation
+        Hstart = T*150; % Start hour of simulation
         index = Hstart+1:Hstart+Nh+Np-1;
         Capacities.Apv = 1;       % Number of PV hectares 
         Capacities.WT = 6;       % Number of wind turbines
@@ -40,12 +40,12 @@ switch sim
             Cg_ExF = 0.9*Grid.Cg_Ex;
             Grid.Cg_Im = 0.065*ones(Nh+Np-1, 1) + 0.001*randn(Nh+Np-1, 1); % Grid revenue (per kWh)
             Cg_ImF = 0.9*Grid.Cg_Im;
-            % Cg_Ex = Grid.Cg_Ex;
-            % Cg_Im = Grid.Cg_Im;
-            % save('Data/Cg_Ex.mat','Cg_Ex')
-            % save('Data/Cg_Im.mat','Cg_Im')
+            Cg_Ex = Grid.Cg_Ex;
+            Cg_Im = Grid.Cg_Im;
+            save('Data/Cg_Ex.mat','Cg_Ex')
+            save('Data/Cg_Im.mat','Cg_Im')
         else
-            simulation.folder = "mpcmilp_and_shrinkingH";
+            simulation.folder = "mpcmilp_and_shrinkingHx-middle";
             Cg_Im = load('Data/Cg_Im.mat');
             Grid.Cg_Im = 1*Cg_Im.Cg_Im;
             Cg_ImF = Cg_Im.Cg_Im;
