@@ -1,8 +1,6 @@
 
 function GenerationDemandProfilesPlotting(H2HeatingDemand, PpvGeneration, WindGeneration, T, namefile)
 hours = 1:T;
-size(hours)
-size(H2HeatingDemand')
 % Create a bar chart with 3 sets of data
 figure; % Create a new figure window
 bar(hours, [H2HeatingDemand'; PpvGeneration'; WindGeneration'], 'grouped'); % Grouped bar chart

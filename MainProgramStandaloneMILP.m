@@ -1,5 +1,6 @@
-function [] = MainProgramStandaloneMILP(Capacities, Grid, dt_f, T_f, Ndays_f, Nh_f, index_f, Hs, CO2, Np, f, nvars, sim, BT)
+function [] = MainProgramStandaloneMILP(Capacities, Grid, Cost, dt_f, T_f, Ndays_f, Nh_f, index_f, Hs, CO2, Np, f, nvars, sim, BT, rand_pv_wt)
 folder = sim.folder;
+stochastic = sim.stochastic;
 dt = dt_f; % Sampling time of 1h
 Ndays = Ndays_f;
 T = T_f; %  Hours in a day
@@ -286,38 +287,47 @@ switch sim.simType
         PVUsage = zeros(2,NNp);
         WTUsage = zeros(2,NNp);
         k = 1;
-        predHorizon = [3 6 12 24];
+        predHorizon = [12 ];
         for prediction = predHorizon
-            [x, mpcmilp,~] = MPCMILPSimulationShrinkingHorizon(Nh, prediction, T, Ppv_actual(1:Nh), Pwind_actual(1:Nh), HeatingD(1:Nh), Cg_Im(1:Nh), Cg_Ex(1:Nh), Grid, Batt, dt, Capacities, Hs, CO2, f.MILP, nvars, Ndays);
+            [x, mpcmilp,~, pv_ret_s, wt_ret_s] = MPCMILPSimulationShrinkingHorizon(Nh, prediction, T, Ppv_actual(1:Nh), Pwind_actual(1:Nh), HeatingD(1:Nh), Cg_Im(1:Nh), Cg_Ex(1:Nh), Grid, Cost, Batt, dt, Capacities, Hs, CO2, f, nvars, Ndays, rand_pv_wt, stochastic);
+            save('shrinking1.mat',"pv_ret_s")
+            save('shrinking2.mat',"wt_ret_s")
             PlotingMILP_v5_saving(x, Nh, T, Ndays, HeatingD(1:Nh), Ppv_actual(1:Nh), Pwind_actual(1:Nh), Cg_Ex(1:Nh), Cg_Im(1:Nh), CO2, init_soc,folder, prediction,"-shrinking");
-            PV_co2(1) = mpcmilp.co2.PVE;
-            WT_co2(1) = mpcmilp.co2.WTE;
-            GR_co2(1) = mpcmilp.co2.GRE;
-    
-            Im(1:k) = mpcmilp.Im;
-            Ex(1:k) = mpcmilp.Ex;
-    
-            SOC_Batt(1:k) = mpcmilp.SOC_Batt;
-            SOC_HDS(1:k) = mpcmilp.SOC_HDS;
-    
-            PVUsage(1:k) =  mpcmilp.PVUsage;
-            WTUsage(1:k) =  mpcmilp.WTUsage;
-    
-            [x, mpcmilp, ~] = MPCMILPSimulation(Nh, prediction, T, Ppv_actual, Pwind_actual, HeatingD, Cg_Im, Cg_Ex, Grid, Batt, dt, Capacities, Hs, CO2, f.MPCMILP, nvars);
 
-            PlotingMILP_v5_saving(x, Nh, T, Ndays, HeatingD(1:Nh), Ppv_actual(1:Nh), Pwind_actual(1:Nh), Cg_Ex(1:Nh), Cg_Im(1:Nh), CO2, init_soc,folder, prediction,"-fixed");
-            PV_co2(2:k) = mpcmilp.co2.PVE;
-            WT_co2(2:k) = mpcmilp.co2.WTE;
-            GR_co2(2:k) = mpcmilp.co2.GRE;
+            % PlotingMILP_v5(x, Nh, T, Ndays, HeatingD(1:Nh), Ppv_actual(1:Nh), Pwind_actual(1:Nh), Cg_Ex(1:Nh), Cg_Im(1:Nh), CO2, init_soc);
+
+            PV_co2(1,k) = mpcmilp.co2.PVE;
+            WT_co2(1,k) = mpcmilp.co2.WTE;
+            GR_co2(1,k) = mpcmilp.co2.GRE;
+
+            Im(1,k) = mpcmilp.Im;
+            Ex(1,k) = mpcmilp.Ex;
+
+            SOC_Batt(1,k) = mpcmilp.SOC_Batt;
+            SOC_HDS(1,k) = mpcmilp.SOC_HDS;
+
+            PVUsage(1,k) =  mpcmilp.PVUsage;
+            WTUsage(1,k) =  mpcmilp.WTUsage;
+            clear x;
+            return
+            [x, mpcmilp, ~, pv_ret, wt_ret] = MPCMILPSimulation(Nh, prediction, T, Ppv_actual, Pwind_actual, HeatingD, Cg_Im, Cg_Ex, Grid, Cost, Batt, dt, Capacities, Hs, CO2, f.MPCMILP, nvars, Ndays, rand_pv_wt, stochastic);
+            save('fixed1.mat',"pv_ret")
+            save('fixed2.mat',"wt_ret")
+            PlotingMILP_v5_saving(x, Nh, T, Ndays, HeatingD(1:Nh), pv_ret, wt_ret, Cg_Ex(1:Nh), Cg_Im(1:Nh), CO2, init_soc,folder, prediction,"-fixed");
+            % PlotingMILP_v5(x, Nh, T, Ndays, HeatingD(1:Nh), Ppv_actual(1:Nh), Pwind_actual(1:Nh), Cg_Ex(1:Nh), Cg_Im(1:Nh), CO2, init_soc);
+
+            PV_co2(2,k) = mpcmilp.co2.PVE;
+            WT_co2(2,k) = mpcmilp.co2.WTE;
+            GR_co2(2,k) = mpcmilp.co2.GRE;
     
-            Im(2:k) = mpcmilp.Im;
-            Ex(2:k) = mpcmilp.Ex;
+            Im(2,k) = mpcmilp.Im;
+            Ex(2,k) = mpcmilp.Ex;
     
-            SOC_Batt(2:k) = mpcmilp.SOC_Batt;
-            SOC_HDS(2:k) = mpcmilp.SOC_HDS;
+            SOC_Batt(2,k) = mpcmilp.SOC_Batt;
+            SOC_HDS(2,k) = mpcmilp.SOC_HDS;
     
-            PVUsage(2:k) =  mpcmilp.PVUsage;
-            WTUsage(2:k) =  mpcmilp.WTUsage;
+            PVUsage(2,k) =  mpcmilp.PVUsage;
+            WTUsage(2,k) =  mpcmilp.WTUsage;
             k = k+1;
         end
         
