@@ -1,4 +1,4 @@
-clc, clear;
+% clc, clear;
 np =10;
 t=10;
 ndays = 2;
@@ -23,9 +23,10 @@ c4=4*ones(1,19);
 c5=5*ones(1,19);
 c6=6*ones(1,19);
 pv = 1:nh+np;
+rand_pv_wt = linspace(1,np*nh,np*nh);
 f=[c1 c2 c3 c4 c5 c6];
 nvars=3;
-recede_type = 'shrinking';
+recede_type = 'shrinking'
 switch recede_type
     case 'fixed'
         for n =1:ndays
@@ -34,12 +35,13 @@ switch recede_type
                     ff=[];
                     for kf=1:nvars
                        ff = [ff f(k+(n-1)*t+(d-1)*np+(kf-1)*nh: np +(n-1)*t+(d-1)*np+(kf-1)*nh + k - 1)];
-                        if kf ==3
-                            fprintf('Step #: %d\n', k);
-                            % disp(ff)
-                        end
+                        % if kf ==3
+                        %     fprintf('Step #: %d\n', k);
+                        %     % disp(ff)
+                        % end
                     end
                     disp(pv(k+(n-1)*t+(d-1)*np:np +(n-1)*t+(d-1)*np + k - 1));
+                    disp(rand_pv_wt(np*(k-1)+(d-1)*np*np + (n-1)*np*t +1:np*k+(d-1)*np*np+ (n-1)*np*t));
                 end
             end
             
@@ -51,13 +53,14 @@ switch recede_type
                 for k = 1:np
                     ff=[];
                     for kf=1:nvars
-                       ff = [ff f(k+(n-1)*t+(d-1)*np+(kf-1)*nh: np +(n-1)*t+(d-1)*np+(kf-1)*nh)];
+                       % ff = [ff f(k+(n-1)*t+(d-1)*np+(kf-1)*nh: np +(n-1)*t+(d-1)*np+(kf-1)*nh)];
                         if kf ==3
-                            fprintf('Step #: %d\n', k);
+                            % fprintf('Step #: %d\n', k);
                             % disp(ff)
                         end
                     end
-                    pv(k+(n-1)*t+(d-1)*np:np +(n-1)*t+(d-1)*np)
+                    disp(pv(k+(n-1)*t+(d-1)*np:np +(n-1)*t+(d-1)*np))
+                    disp(rand_pv_wt(np*(k-1)+(d-1)*np*np + (n-1)*np*t +1:np*k-k+1+(d-1)*np*np+ (n-1)*np*t));
                 end
             end
             

@@ -16,13 +16,13 @@ tic;
 % X(4) Electrolyser capacity [kW] 
 % X(5) Hydrogen storage capacity for heating 
 
-lb = [0 3 200 100 500];
+lb = [1 1 1 1 1];
 ub = [2 10 1000 3000 20000];
 % M = 200;
 % min = [1, 1, 50]; 
 % max = [4000, 400, 10000];
-initialSoln = [0 4 250 262 18000];
-options = optimoptions('particleswarm','Display','iter','FunValCheck','on', 'InitialPoints',initialSoln);%, ...
+% initialSoln = [1 6 250 262 18000];
+options = optimoptions('particleswarm','Display','iter','FunValCheck','on');%, ...
     % 'OutputFcn',@PlotSwarmR3Euclidean);
 [x,fval,exitflag,output,points] = particleswarm(func, nvars, lb, ub, options);
 

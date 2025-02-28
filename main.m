@@ -1,6 +1,6 @@
 
 clear,clc, close all;
-sim = 'nH_sim';
+sim = 'pso';
 simulation.simType = "mpcmilp_and_shrinkingH";
 simulation.stochastic = 0;
 newPrices = 0;
@@ -10,15 +10,15 @@ switch sim
 
     case 'nH_sim'
         
-        Np = 1;
+        Np = 24;
         dt = 1;
         Ndays = 1;
         T = 24; % # of hours in a day 
         Nh = T*Ndays; % Total hours in Ndays
         Hstart = T*0; % Start hour of simulation
         index = Hstart+1:Hstart+Nh+Np-1;
-        Capacities.Apv = 1;       % Number of PV hectares 
-        Capacities.WT = 6;       % Number of wind turbines
+        Capacities.Apv = 0;       % Number of PV hectares 
+        Capacities.WT = 4;       % Number of wind turbines
         Capacities.Bs = 250;      % Battery kWh 
         Capacities.Pnom_El = 261.888; % Electrolyzer capacity in kW
         Capacities.Hs = 17582.69628119343;      % H2 storage in kg

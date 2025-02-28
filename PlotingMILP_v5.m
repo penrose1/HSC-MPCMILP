@@ -31,23 +31,8 @@ P_B_g = [x(18*Nh+1:19*Nh)];
 span = 1:Nh;
 span_soc = 0:Nh;
 
-%%
-% close all;
-% figure;
-% plot(1:T, P_load, 1:T, P_pv, 1:T, P_wind, 'r--*', 'LineWidth', 2);
-% ylabel('Power (kW)', 'Interpreter', 'latex');
-% xlabel('Time (h)');
-% figure;
-% yyaxis left % For power (kW)
-% plot(1:T, Pb_c, 1:T, -Pb_d, 1:T, P_load - P_pv - P_wind, 'r--*', 1:T, P_load - P_pv - P_wind- Pg_Im + Pg_Ex - Pb_d + Pb_c, 'g--o', ...
-%     1:T, -Pg_Ex, 1:T, Pg_Im, 'LineWidth', 2);
-% ylabel('Power (kW)', 'Interpreter', 'latex');
-% yyaxis right % For SOC (%)
-% plot(0:T, SOC, 'LineWidth', 2);
-% ylabel('$SOC(\%)$', 'Interpreter', 'latex');
-% legend('$Pb_{c}$', '$Pb_{d}$', '$P_{load} - P_{pv} - P_{wind}$','$\Sigma P$', ...
-%     '$P^{grid}_{out}$', '$P^{grid}_{in}$', '$SOC$', 'Location', 'northwest', 'Interpreter','latex')
-% grid on;
+%##################
+% Control setpoints
 figure;
 yyaxis left % For power (kW)
 
@@ -67,7 +52,8 @@ legend('$P_{B}$', '$P_{Ele} - P_{RE}$','$\Sigma P$', ...
     '$P_{G}$', '$Battery \:SOC$', 'Location', 'northwest', 'Interpreter','latex')
 grid on
 
-%% Plot curtailed power
+%##################
+% Plot curtailed power
 figure;
 subplot(2,1,1)
 plot(span, Pwt_available,'r',span, (1-lambda_w).*Pwt_available,'b--*','LineWidth',1.2);
@@ -76,7 +62,8 @@ subplot(2,1,2)
 plot(span, Ppv_available,'r',span, (1-lambda_pv).*Ppv_available,'b--*','LineWidth',1.2);
 legend('$Available \:PV$','$Curtailed \:PV$', 'Interpreter', 'latex')
 
-%% RE used and Pele
+%##################
+% RE used and Pele
 figure;
 subplot(2,1,1)
 plot(span, Pel,'r',span, (lambda_pv).*Ppv_available + (lambda_w).*Pwt_available,'b--*','LineWidth',1.2);
@@ -85,28 +72,8 @@ subplot(2,1,2)
 plot(span, Pel,'r',span, Ppv_available + Pwt_available,'b--*','LineWidth',1.2);
 legend('$P_{Ele}$','$P_{RE} available$', 'Interpreter', 'latex')
 
-%% H2 storage SOC, and internal setpoints
-% figure;
-% yyaxis left;
-% plot(span,H_El2Hs, 'g-',span,H_El2Hd, 'r-',span,H_Hs2Hd, 'b-', span,HDemand, 'm--*', 'LineWidth', 1.2)
-% ylabel("H_{El2Hs}, H_{EL2Hd}, H_{Hs2Hd}, HH_{Demand} [kg]")
-% yyaxis right;
-% plot(span_soc,SOC_Hs, "LineWidth",1.2)
-% ylabel('$SOC_{Hs} (\%)$')
-% legend('$H_{El2Hs}$','$H_{EL2Hd}$','$H_{Hs2Hd}$', '$HH_{Demand}$', '$SOC_{Hs}$','Interpreter','latex');
-% xlabel('Time(h)');
-% % title('Electrolyzer power contribution and heating storage SOC evolution')
-% % Electrolyzer output hydrogen flow 
-% figure;
-% yyaxis left;
-% plot(span,H_El2Hs, 'g-',span,H_El2Hd, 'r-',span,H_Hs2Hd, 'b-', span,HDemand, 'm--*', 'LineWidth', 1.2)
-% ylabel("H_{El2Hs}, H_{EL2Hd}, H_{Hs2Hd}, HH_{Demand} [kg]")
-% yyaxis right;
-% plot(span, Pel, '-', 'LineWidth', 1.2);
-% ylabel('P_{Ele}');
-% legend('$H_{El2Hs}$','$H_{EL2Hd}$','$H_{Hs2Hd}$', '$HH_{Demand}$', '$P_{Ele}$' ,'Interpreter','latex');
-% % title('Hydrogen flow')
-
+%##################
+% H2 storage SOC, and internal setpoints
 figure;
 subplot(2,1,1)
 plot(span,H_El2Hs, 'g-',span,H_El2Hd, 'r-',span,H_Hs2Hd, 'b-', span,HDemand, 'm--*', 'LineWidth', 1.2)
@@ -122,7 +89,9 @@ yyaxis right
 plot(span_soc, SOC_Hs, 'LineWidth',1.2)
 ylabel('SOC_{Hs} (%)')
 legend('$P_{Ele}$', '$P_{RE}$', '$SOC_{Hs}$', 'Interpreter','latex')
-%% Grid Expenxes/Revenues
+
+%##################
+% Grid Expenxes/Revenues
 figure;
 y1 = -Cg_Im.*Pg_Im; % Grid charges 
 y2 = Cg_Ex.*Pg_Ex;  % Grid revenues
@@ -142,23 +111,8 @@ y_label = sprintf('Cost/Revenue(Euros)');
 ylabel(y_label,'Interpreter','latex');
 % title('Grid cost/revenue in Euros','Interpreter','latex');
 
-%% Inner variable 
-% figure;
-% plot(span, P_RE_B, span, P_RE_g, span, P_RE_Ele, span ,P_g_B, span, P_g_Ele, span, P_B_Ele, span, P_B_g,'LineWidth', 1.2)
-% % title('Inner variables')
-% legend('$P_{RE2B}$', '$P_{RE2G}$', '$P_{RE2Ele}$', '$P_{G2B}$', '$P_{G2Ele}$', '$P_{B2Ele}$', '$P_{B2G}$', 'Interpreter','latex', 'Location', 'northwest')
-
-% figure;
-% subplot(2,1,1)
-% plot(span, P_RE_B+P_RE_g+P_RE_Ele - (lambda_pv).*Ppv_available - (lambda_w).*Pwt_available, 'LineWidth',1.2)
-% legend('$RE splitted total - RE total$','Interpreter','latex')
-% 
-% subplot(2,1,2)
-% plot(span,P_RE_B+P_RE_g+P_RE_Ele, '*r', span, (lambda_pv).*Ppv_available + (lambda_w).*Pwt_available,'--b', 'LineWidth',1.2)
-% legend('$RE splitted$', '$RE$','Interpreter','latex')
-
-
-%% RE distribution
+%##################
+% RE distribution
 annotation.title = 'RE distribution';
 annotation.xlabel = 'Time[h]';
 annotation.ylabel = 'P_{RE2B}, P_{RE2G}, P_{RE2Ele} [kW]';
@@ -166,7 +120,8 @@ annotation.label={"P_{RE2B}", "P_{RE2G}", "P_{RE2Ele}"};
 Pagg = [P_RE_B'; P_RE_g'; P_RE_Ele'];
 Power_Contribution_Disribution(span, annotation, Pagg);
 
-%% Electrolyzer contribution
+%##################
+% Electrolyzer contribution
 annotation.title = 'Electrolyzer contribution';
 annotation.xlabel = 'Time(h)';
 annotation.ylabel = 'RE,B,G(kWh)';
@@ -174,7 +129,8 @@ annotation.label={"P_{B2ELe}", "P_{G2Ele}", "P_{RE2Ele}"};
 Pagg = [P_B_Ele'; P_g_Ele'; P_RE_Ele'];
 Power_Contribution_Disribution(span, annotation, Pagg);
 
-%% Battery contribution
+%##################
+% Battery contribution
 annotation.title = 'Battery contribution';
 annotation.xlabel = 'Time(h)';
 annotation.ylabel = 'RE,G(kWh)';
@@ -182,7 +138,8 @@ annotation.label={"P_{RE2B}", "P_{G2B}"};
 Pagg = [P_RE_B'; P_g_B'];
 Power_Contribution_Disribution(span, annotation, Pagg);
 
-%% Grid contribution
+%##################
+% Grid contribution
 annotation.title = 'Grid contribution';
 annotation.xlabel = 'Time(h)';
 annotation.ylabel = 'RE,B (kWh)';
@@ -190,7 +147,8 @@ annotation.label={"P_{RE2G}", "P_{B2G}"};
 Pagg = [P_RE_g'; P_B_g'];
 Power_Contribution_Disribution(span, annotation, Pagg);
 
-%% CO2 Emission contribution hourly basis 
+%##################
+% CO2 Emission contribution hourly basis 
 annotation.title = 'Hourly CO2 Emission contribution';
 annotation.xlabel = 'Time(h)';
 annotation.ylabel = 'PVE,WTE,GRE(gco2perkWh)';
@@ -198,7 +156,8 @@ annotation.label={"PVE", "WTE", "GRE"};
 Pagg = [Ppv_available'.*lambda_pv'*CO2.PVE; Pwt_available'.*lambda_w'*CO2.WTE; (Pg_Im' - CO2.ExportedREConsidered*Pg_Ex')*CO2.GRE];
 Power_Contribution_Disribution(span, annotation, Pagg);
 
-%% CO2 Emission contribution daily basis
+%##################
+% CO2 Emission contribution daily basis
 annotation.title = 'Daily CO2 Emission contribution';
 annotation.xlabel = 'Time(Day)';
 annotation.ylabel = 'PVE WTE GRE (gco2perkWh)';
@@ -207,7 +166,6 @@ Pagg1 = zeros(Ndays,3);
 for k = 1:Ndays
     Pagg1(k,:) = [sum(Ppv_available((k-1)*T+1:T*k)'.*lambda_pv((k-1)*T+1:T*k)')*CO2.PVE, sum(Pwt_available((k-1)*T+1:T*k)'.*lambda_w((k-1)*T+1:T*k)')*CO2.WTE, sum((Pg_Im((k-1)*T+1:T*k)' - CO2.ExportedREConsidered*Pg_Ex((k-1)*T+1:T*k)'))*CO2.GRE];
 end
-% Pagg = [sum(Ppv_available'.*lambda_pv'*CO2.PVE); sum(Pwt_available'.*lambda_w'*CO2.WTE); sum((Pg_Im' - CO2.ExportedREConsidered*Pg_Ex')*CO2.GRE)];
 Power_Contribution_DisributionCO2(1:Ndays, annotation, Pagg1);
 
 

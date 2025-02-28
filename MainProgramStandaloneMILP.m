@@ -120,7 +120,7 @@ switch sim.simType
         % RE usage 
         PVUsage = zeros(1,NNp);
         WTUsage = zeros(1,NNp);
-        indx = [24];
+        indx = [3 6 12 24];
         k = 1;
         for PredictionL = indx
             [x, mpcmilp, elapsedTime] = MPCMILPSimulation(Nh, PredictionL, T, Ppv_actual, Pwind_actual, HeatingD, Cg_Im, Cg_Ex, Grid, Batt, dt, Capacities, Hs, CO2, f.MPCMILP, nvars);
@@ -268,6 +268,7 @@ switch sim.simType
     case 'mpcmilp_and_shrinkingH'
         % Run the same simulation with different prediction horizon for
         % both fixed and shrinking horizon
+
         % Storage vectors
         NNp = 4;
         % CO2
@@ -287,12 +288,12 @@ switch sim.simType
         PVUsage = zeros(2,NNp);
         WTUsage = zeros(2,NNp);
         k = 1;
-        predHorizon = [12 ];
+        predHorizon = [1];
         for prediction = predHorizon
             [x, mpcmilp,~, pv_ret_s, wt_ret_s] = MPCMILPSimulationShrinkingHorizon(Nh, prediction, T, Ppv_actual(1:Nh), Pwind_actual(1:Nh), HeatingD(1:Nh), Cg_Im(1:Nh), Cg_Ex(1:Nh), Grid, Cost, Batt, dt, Capacities, Hs, CO2, f, nvars, Ndays, rand_pv_wt, stochastic);
-            save('shrinking1.mat',"pv_ret_s")
-            save('shrinking2.mat',"wt_ret_s")
-            PlotingMILP_v5_saving(x, Nh, T, Ndays, HeatingD(1:Nh), Ppv_actual(1:Nh), Pwind_actual(1:Nh), Cg_Ex(1:Nh), Cg_Im(1:Nh), CO2, init_soc,folder, prediction,"-shrinking");
+            save('shrinking3.mat',"pv_ret_s")
+            save('shrinking4.mat',"wt_ret_s")
+            PlotingMILP_v5_saving(x, Nh, T, Ndays, HeatingD(1:Nh),  pv_ret_s,  wt_ret_s, Cg_Ex(1:Nh), Cg_Im(1:Nh), CO2, init_soc,folder, prediction,"-shrinking");
 
             % PlotingMILP_v5(x, Nh, T, Ndays, HeatingD(1:Nh), Ppv_actual(1:Nh), Pwind_actual(1:Nh), Cg_Ex(1:Nh), Cg_Im(1:Nh), CO2, init_soc);
 
@@ -309,23 +310,23 @@ switch sim.simType
             PVUsage(1,k) =  mpcmilp.PVUsage;
             WTUsage(1,k) =  mpcmilp.WTUsage;
             clear x;
-            return
-            [x, mpcmilp, ~, pv_ret, wt_ret] = MPCMILPSimulation(Nh, prediction, T, Ppv_actual, Pwind_actual, HeatingD, Cg_Im, Cg_Ex, Grid, Cost, Batt, dt, Capacities, Hs, CO2, f.MPCMILP, nvars, Ndays, rand_pv_wt, stochastic);
-            save('fixed1.mat',"pv_ret")
-            save('fixed2.mat',"wt_ret")
+
+            [x, mpcmilp, ~, pv_ret, wt_ret] = MPCMILPSimulation(Nh, prediction, T, Ppv_actual, Pwind_actual, HeatingD, Grid, Cost, Batt, dt, Capacities, Hs, CO2, f.MPCMILP, nvars, Ndays, rand_pv_wt, stochastic);
+            save('fixed3.mat',"pv_ret")
+            save('fixed4.mat',"wt_ret")
             PlotingMILP_v5_saving(x, Nh, T, Ndays, HeatingD(1:Nh), pv_ret, wt_ret, Cg_Ex(1:Nh), Cg_Im(1:Nh), CO2, init_soc,folder, prediction,"-fixed");
             % PlotingMILP_v5(x, Nh, T, Ndays, HeatingD(1:Nh), Ppv_actual(1:Nh), Pwind_actual(1:Nh), Cg_Ex(1:Nh), Cg_Im(1:Nh), CO2, init_soc);
 
             PV_co2(2,k) = mpcmilp.co2.PVE;
             WT_co2(2,k) = mpcmilp.co2.WTE;
             GR_co2(2,k) = mpcmilp.co2.GRE;
-    
+
             Im(2,k) = mpcmilp.Im;
             Ex(2,k) = mpcmilp.Ex;
-    
+
             SOC_Batt(2,k) = mpcmilp.SOC_Batt;
             SOC_HDS(2,k) = mpcmilp.SOC_HDS;
-    
+
             PVUsage(2,k) =  mpcmilp.PVUsage;
             WTUsage(2,k) =  mpcmilp.WTUsage;
             k = k+1;

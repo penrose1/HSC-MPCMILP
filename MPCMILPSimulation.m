@@ -1,5 +1,6 @@
-function [x,mpcmilp, elapsedTime, pv_ret, wt_ret] = MPCMILPSimulation(Nh, Np, T, Ppv_actual, Pwind_actual, HeatingD, Cg_Im, Cg_Ex, Grid, Cost, Batt, dt, Capacities, Hs, CO2, f, nvars, Ndays, rand_pv_wt, stochastic)
-
+function [x,mpcmilp, elapsedTime, pv_ret, wt_ret] = MPCMILPSimulation(Nh, Np, T, Ppv_actual, Pwind_actual, HeatingD, Grid, Cost, Batt, dt, Capacities, Hs, CO2, f, nvars, Ndays, rand_pv_wt, stochastic)
+Cg_Im = Grid.Cg_Im;
+Cg_Ex = Grid.Cg_Ex;
 % Call MILP_v4_Callee.m to get optimized values for each h
 % Storage location
 Pg_Im = zeros(Nh,1);
@@ -34,11 +35,6 @@ wt_ret = zeros(Nh,1);
 for n = 1:Ndays
     for d = 1:T/Np
         for k = 1:Np
-            ff = [];
-            for kf = 1:nvars
-                ff = [ff f(k+(n-1)*T+(d-1)*Np+(kf-1)*Nh: Np +(n-1)*T+(d-1)*Np+(kf-1)*Nh + k - 1)];
-            end
-            disp(ff)
             tic; % start stopwatch 
             if stochastic == 1
                 pv = Ppv_actual(k+(n-1)*T+(d-1)*Np:Np +(n-1)*T+(d-1)*Np + k - 1).*(1+rand_pv_wt(Np*(k-1)+1:Np*k));
@@ -68,43 +64,43 @@ for n = 1:Ndays
             [x, ~, ~] = MILP_v4_Callee(pv, wt, hd, ...
                 Grid.Pgrid_max_Im, Grid.Pgrid_max_Ex, Grid.Pgrid_min_Ex, Batt, dt, Np, Capacities, Hs, CO2, Grid, Cost, "fixed", Np);
             elapsedTime = elapsedTime+toc;
-
+            
             Pg_Im(k+(d-1)*Np+(n-1)*T) = x(1);
-            Pg_Ex(k+(d-1)*Np+(n-1)*T) = x(Np-k+1+1);
-            Pb_c(k+(d-1)*Np+(n-1)*T) = x(2*(Np-k+1)+1);
-            Pb_d(k+(d-1)*Np+(n-1)*T) = x(3*(Np-k+1)+1);
-            SOC(k+(d-1)*Np+(n-1)*T) = x(4*(Np-k+1)+1);
-            delta_g(k+(d-1)*Np+(n-1)*T) = x(5*(Np-k+1)+1);
-            delta_b(k+(d-1)*Np+(n-1)*T) = x(6*(Np-k+1)+1);
-            lambda_pv(k+(d-1)*Np+(n-1)*T) = x(7*(Np-k+1)+1);
-            lambda_w(k+(d-1)*Np+(n-1)*T) = x(8*(Np-k+1)+1);
-            SOC_Hs(k+(d-1)*Np+(n-1)*T) = x(9*(Np-k+1)+1);
-            H_El2Hs(k+(d-1)*Np+(n-1)*T) = x(10*(Np-k+1)+1);
-            H_El2Hd(k+(d-1)*Np+(n-1)*T) = x(11*(Np-k+1)+1);
-            H_Hs2Hd(k+(d-1)*Np+(n-1)*T) = x(12*(Np-k+1)+1);
-            Pel(k+(d-1)*Np+(n-1)*T) = x(13*(Np-k+1)+1);
-            P_RE_B(k+(d-1)*Np+(n-1)*T) = x(14*(Np-k+1)+1);
-            P_RE_g(k+(d-1)*Np+(n-1)*T) = x(15*(Np-k+1)+1);
-            P_RE_Ele(k+(d-1)*Np+(n-1)*T) = x(16*(Np-k+1)+1);
-            P_g_B(k+(d-1)*Np+(n-1)*T) = x(17*(Np-k+1)+1);
-            P_g_Ele(k+(d-1)*Np+(n-1)*T) = x(18*(Np-k+1)+1);
-            P_B_Ele(k+(d-1)*Np+(n-1)*T) = x(19*(Np-k+1)+1);
-            P_B_g(k+(d-1)*Np+(n-1)*T) = x(20*(Np-k+1)+1);
-            Batt.signals.values(7) = x(4*(Np-k+1)+1); % Update the initial SOC
-            Hs.SOC_init = x(9*(Np-k+1)+1);
+            Pg_Ex(k+(d-1)*Np+(n-1)*T) = x(Np+1);
+            Pb_c(k+(d-1)*Np+(n-1)*T) = x(2*(Np)+1);
+            Pb_d(k+(d-1)*Np+(n-1)*T) = x(3*(Np)+1);
+            SOC(k+(d-1)*Np+(n-1)*T) = x(4*(Np)+1);
+            delta_g(k+(d-1)*Np+(n-1)*T) = x(5*(Np)+1);
+            delta_b(k+(d-1)*Np+(n-1)*T) = x(6*(Np)+1);
+            lambda_pv(k+(d-1)*Np+(n-1)*T) = x(7*(Np)+1);
+            lambda_w(k+(d-1)*Np+(n-1)*T) = x(8*(Np)+1);
+            SOC_Hs(k+(d-1)*Np+(n-1)*T) = x(9*(Np)+1);
+            H_El2Hs(k+(d-1)*Np+(n-1)*T) = x(10*(Np)+1);
+            H_El2Hd(k+(d-1)*Np+(n-1)*T) = x(11*(Np)+1);
+            H_Hs2Hd(k+(d-1)*Np+(n-1)*T) = x(12*(Np)+1);
+            Pel(k+(d-1)*Np+(n-1)*T) = x(13*(Np)+1);
+            P_RE_B(k+(d-1)*Np+(n-1)*T) = x(14*(Np)+1);
+            P_RE_g(k+(d-1)*Np+(n-1)*T) = x(15*(Np)+1);
+            P_RE_Ele(k+(d-1)*Np+(n-1)*T) = x(16*(Np)+1);
+            P_g_B(k+(d-1)*Np+(n-1)*T) = x(17*(Np)+1);
+            P_g_Ele(k+(d-1)*Np+(n-1)*T) = x(18*(Np)+1);
+            P_B_Ele(k+(d-1)*Np+(n-1)*T) = x(19*(Np)+1);
+            P_B_g(k+(d-1)*Np+(n-1)*T) = x(20*(Np)+1);
+            Batt.signals.values(7) = x(4*(Np)+1); % Update the initial SOC
+            Hs.SOC_init = x(9*(Np)+1);
             
         end
     end
 end
 
-disp('Grid cost')
+% disp('Grid cost')
 Im = sum(Cg_Im(1:Nh).*Pg_Im);
-disp(Im);
-disp('Grid revenue')
+% disp(Im);
+% disp('Grid revenue')
 Ex = sum(Cg_Ex(1:Nh).*Pg_Ex);
-disp(Ex);
-disp('MPC-MILP grid expenses')
-disp(sum(Cg_Im(1:Nh).*Pg_Im)-sum(Cg_Ex(1:Nh).*Pg_Ex))
+% disp(Ex);
+% disp('MPC-MILP grid expenses')
+% disp(sum(Cg_Im(1:Nh).*Pg_Im)-sum(Cg_Ex(1:Nh).*Pg_Ex))
 x = [Pg_Im; Pg_Ex; Pb_c; Pb_d; SOC; lambda_pv; lambda_w; SOC_Hs; H_El2Hs; H_El2Hd; H_Hs2Hd; Pel; P_RE_B ; P_RE_g; P_RE_Ele; P_g_B; P_g_Ele; P_B_Ele; P_B_g ];
 mpcmilp.co2.PVE = sum(Ppv_actual(1:Nh).*lambda_pv(1:Nh))*CO2.PVE;
 mpcmilp.co2.WTE = sum(Pwind_actual(1:Nh).*lambda_w(1:Nh))*CO2.WTE;

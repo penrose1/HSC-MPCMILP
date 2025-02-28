@@ -293,9 +293,9 @@ Cg_Ele = 1*Cg_ImF;
 Cb_Ele = (1/1)*Cg_ImF;
 Cb_g = (0)*Cg_ImF;
 
-f = [0*Cg, 0*Cb, -0*Csoc, zeros(1, n_binary), -1*Cre, -Csoc, zeros(1, 3*Np), 0*Cpel, -Cre_b, -Cre_g, -Cre_Ele, Cg_b, Cg_Ele, -Cb_Ele, Cb_g];
-[~ ,f_size] = size(f);
-fprintf('Size of f: %d\n', f_size);
+f = [0*Cg, 0*Cb, -Csoc, zeros(1, n_binary), -1*Cre, -Csoc, zeros(1, 3*Np), 0*Cpel, -Cre_b, -Cre_g, -Cre_Ele, Cg_b, Cg_Ele, -Cb_Ele, Cb_g];
+% [~ ,f_size] = size(f);
+% fprintf('Size of f: %d\n', f_size);
 
 %% Configuration and invocation of  intlinprog routine
 % Define the optimization problem using 'intlinprog' for MILP
@@ -308,13 +308,13 @@ try
     if exitflag == 0 || exitflag == -2 || exitflag == -3 || exitflag == -9
         boolVar = -1;
         disp('failed');
-        [x] = 0; % For infeasible region. i.e. sizes specified by PSO should be discard (Inf cost)
+        x = 0; % For infeasible region. i.e. sizes specified by PSO should be discard (Inf cost)
     else 
         boolVar = 1;
     end
     % disp('Founded')
 catch
-    [x] = 0; % For infeasible region.{When sizing, the sizes specified by PSO should be discard (inf cost)}
+    x = 0; % For infeasible region.{When sizing, the sizes specified by PSO should be discard (inf cost)}
     boolVar = -1;
     disp('catched exception');
 end

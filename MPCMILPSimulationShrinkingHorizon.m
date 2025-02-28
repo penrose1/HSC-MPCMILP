@@ -37,30 +37,27 @@ wt_ret = zeros(Nh,1);
 for n =1:Ndays
     for d = 1:T/Np
         for k = 1:Np
+            % Slicing demands and generation data to MILP engine 
             if stochastic == 1
-                pv = Ppv_actual(k+(n-1)*T+(d-1)*Np:Np +(n-1)*T+(d-1)*Np).*(1+rand_pv_wt(Np*(k-1)+1:Np*k));
+                pv = Ppv_actual(k+(n-1)*T+(d-1)*Np:Np +(n-1)*T+(d-1)*Np).*(1+rand_pv_wt(Np*(k-1)+(d-1)*Np*Np + (n-1)*Np*T +1:Np*k-k+1+(d-1)*Np*Np+ (n-1)*Np*T));
                 pv_ret(k+(d-1)*Np+(n-1)*T,1) =  pv(1);
-                wt = Pwind_actual(k+(n-1)*T+(d-1)*Np:Np +(n-1)*T+(d-1)*Np).*(1+rand_pv_wt(Np*(k-1)+1:Np*k));
+                wt = Pwind_actual(k+(n-1)*T+(d-1)*Np:Np +(n-1)*T+(d-1)*Np).*(1+rand_pv_wt(Np*(k-1)+(d-1)*Np*Np + (n-1)*Np*T +1:Np*k-k+1+(d-1)*Np*Np+ (n-1)*Np*T));
                 wt_ret(k+(d-1)*Np+(n-1)*T,1) = wt(1);
                 hd =  HeatingD(k+(n-1)*T+(d-1)*Np:Np +(n-1)*T+(d-1)*Np );
             else
                 % disp(k+(n-1)*T+(d-1)*Np:Np +(n-1)*T+(d-1)*Np)
-                pv = Ppv_actual(k+(n-1)*T+(d-1)*Np:Np +(n-1)*T+(d-1)*Np );
+                pv = Ppv_actual(k+(n-1)*T+(d-1)*Np:Np +(n-1)*T+(d-1)*Np);
                 pv_ret(k+(d-1)*Np+(n-1)*T,1) =  pv(1);
                 wt = Pwind_actual(k+(n-1)*T+(d-1)*Np:Np +(n-1)*T+(d-1)*Np );
                 wt_ret(k+(d-1)*Np+(n-1)*T,1) = wt(1);
                 hd =  HeatingD(k+(n-1)*T+(d-1)*Np:Np +(n-1)*T+(d-1)*Np );
             end
-            % Slicing demands and generation data to MILP engine 
+    
             tic;
-            % [x, ~, ~] = MILP_v4_Callee(Ppv_actual(k+(n-1)*T+(d-1)*Np:Np +(n-1)*T+(d-1)*Np), Pwind_actual(k+(n-1)*T+(d-1)*Np:Np +(n-1)*T+(d-1)*Np), HeatingD(k+(n-1)*T+(d-1)*Np:Np +(n-1)*T+(d-1)*Np), ...
-            % Grid.Pgrid_max_Im, Grid.Pgrid_max_Ex, Grid.Pgrid_min_Ex, Batt, dt, Np-k+1, Capacities, Hs, CO2,ff);
             [x, ~, ~] = MILP_v4_Callee(pv, wt, hd, ...
             Grid.Pgrid_max_Im, Grid.Pgrid_max_Ex, Grid.Pgrid_min_Ex, Batt, dt, Np - k+1, Capacities, Hs, CO2, Grid, Cost, "shrinking", Np - k+1);
             elapsed_time = toc+elapsed_time;
-   
-            % fprintf("Size of x at step %d\n", k);
-            % disp(size(x))
+
             Pg_Im(k+(d-1)*Np+(n-1)*T) = x(1);
             Pg_Ex(k+(d-1)*Np+(n-1)*T) = x(1*(Np-k+1)+1);
             Pb_c(k+(d-1)*Np+(n-1)*T) = x(2*(Np-k+1)+1);
@@ -89,14 +86,14 @@ for n =1:Ndays
     
 end
 
-disp('Grid cost with shrinking horizon')
+% disp('Grid cost with shrinking horizon')
 Im = sum(Cg_Im(1:Nh).*Pg_Im);
-disp(Im);
-disp('Grid revenue with shrinking horizon')
+% disp(Im);
+% disp('Grid revenue with shrinking horizon')
 Ex = sum(Cg_Ex(1:Nh).*Pg_Ex);
-disp(Ex);
-disp('MPC-MILP grid expenses with shrinking horizon')
-disp(sum(Cg_Im(1:Nh).*Pg_Im)-sum(Cg_Ex(1:Nh).*Pg_Ex))
+% disp(Ex);
+% disp('MPC-MILP grid expenses with shrinking horizon')
+% disp(sum(Cg_Im(1:Nh).*Pg_Im)-sum(Cg_Ex(1:Nh).*Pg_Ex))
 x = [Pg_Im; Pg_Ex; Pb_c; Pb_d; SOC; lambda_pv; lambda_w; SOC_Hs; H_El2Hs; H_El2Hd; H_Hs2Hd; Pel; P_RE_B ; P_RE_g; P_RE_Ele; P_g_B; P_g_Ele; P_B_Ele; P_B_g ];
 mpcmilp.co2.PVE = sum(Ppv_actual(1:Nh).*lambda_pv(1:Nh))*CO2.PVE;
 mpcmilp.co2.WTE = sum(Pwind_actual(1:Nh).*lambda_w(1:Nh))*CO2.WTE;

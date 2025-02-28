@@ -72,8 +72,7 @@ function NPC = CostFunction(X)
 
     Grid.Cg_Ex = 0.065*ones(Nh+Np-1, 1)+  0.00*randn(Nh+Np-1, 1); % Grid power cost (per kWh)
     Grid.Cg_Im = 0.065*ones(Nh+Np-1, 1) + 0.00*randn(Nh+Np-1, 1); % Grid revenue (per kWh)
-    Cost.Cg_ExF = 0.065*ones(Nh+Np-1, 1)+  0.00*randn(Nh+Np-1, 1); % Grid power cost (per kWh)
-    Cost.Cg_ImF = 0.065*ones(Nh+Np-1, 1)+  0.00*randn(Nh+Np-1, 1); % Grid power cost (per kWh)
+
 
 
     % CO2 cost
@@ -94,13 +93,10 @@ function NPC = CostFunction(X)
     Capacities.Pnom_El = X(4);
     for y = 1:N
 
-        [gridCost, boolVal] = MPCMILPSimulation_PSO(Nh, Np, T, Ppv_N_years, Pwind_N_years, H2HEating_N_years,Grid, Cost, Batt, dt, Capacities, Hs, CO2, Ndays);
+        [gridCost, ~] = MPCMILPSimulation_PSO(Nh, Np, T, Ppv_N_years, Pwind_N_years, H2HEating_N_years,Grid, Cost, Batt, dt, Capacities, Hs, CO2, Ndays);
         % Check for infeasibility in the MILP optimizer 
-        if boolVal == -1
-            OPEX(y)= 1e25;
-        else
-            OPEX(y) = OPEX_Helper(gridCost, y); % One year is over
-        end
+        
+        OPEX(y) = OPEX_Helper(gridCost, y); % One year is over
     end    
 
     % Evaluates NPC among N
